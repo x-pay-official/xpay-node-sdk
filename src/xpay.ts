@@ -93,13 +93,15 @@ export class XPay {
     // Format the data parameter using the formatDataForSignature method
     const dataString = this.formatDataForSignature(params);
     
-    // Build the signature string in the format: data={key=value, key=value}&nonce=xxx&timestamp=xxx
-    const signatureString = `data={${dataString}}&nonce=${nonce}&timestamp=${timestamp}`;
+    // Create parameters object for signature
+    const paramsObj: Record<string, string | number> = {
+      data: `{${dataString}}`,
+      nonce: nonce,
+      timestamp: timestamp
+    };
     
-    // Calculate HMAC-SHA256 signature
-    const signature = createHmac('sha256', this.apiSecret)
-      .update(signatureString)
-      .digest('hex');
+    // Calculate signature using the common method
+    const signature = this.calculateSignature(paramsObj);
     
     // Return the request object with signature, timestamp, nonce, and data
     return {
@@ -108,6 +110,24 @@ export class XPay {
       nonce,
       data: params
     };
+  }
+  
+  /**
+   * Calculate signature from parameters
+   * @param params - Parameters to sign
+   * @returns HMAC-SHA256 signature
+   */
+  private calculateSignature(params: Record<string, any>): string {
+    // Sort keys alphabetically (same as Java's TreeMap)
+    const sortedKeys = Object.keys(params).sort();
+    const signatureString = sortedKeys
+      .map(key => `${key}=${params[key]}`)
+      .join('&');
+    
+    // Calculate HMAC-SHA256 signature
+    return createHmac('sha256', this.apiSecret)
+      .update(signatureString)
+      .digest('hex');
   }
 
   /**
@@ -139,13 +159,16 @@ export class XPay {
       // Format the data parameter as a string in the format: key=value, key=value
       const dataString = this.formatDataForSignature(webhookData.data || {});
       
-      // Build the signature string in the format: data={key=value, key=value}&nonce=xxx&notifyType=xxx&timestamp=xxx
-      const signatureString = `data={${dataString}}&nonce=${providedNonce}&notifyType=${notifyType}&timestamp=${providedTimestamp}`;
+      // Create parameters object for signature
+      const paramsObj: Record<string, string | number> = {
+        data: `{${dataString}}`,
+        nonce: providedNonce,
+        notifyType: notifyType,
+        timestamp: providedTimestamp
+      };
       
-      // Calculate HMAC-SHA256 signature
-      const expectedSignature = createHmac('sha256', this.apiSecret)
-        .update(signatureString)
-        .digest('hex');
+      // Calculate signature using the common method
+      const expectedSignature = this.calculateSignature(paramsObj);
       
       return expectedSignature === providedSignature;
     } catch (error) {
@@ -165,14 +188,17 @@ export class XPay {
    * @returns Formatted data string
    */
   private formatDataForSignature(data: Record<string, any>): string {
-    return Object.entries(data)
+    // Sort keys alphabetically first
+    const sortedEntries = Object.entries(data).sort((a, b) => a[0].localeCompare(b[0]));
+    
+    return sortedEntries
       .map(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
           // Handle nested objects recursively
           if (Array.isArray(value)) {
             return `${key}=[${value.map(item => 
               typeof item === 'object' ? `{${this.formatDataForSignature(item)}}` : item
-            ).join(', ')}]`;
+            ).join(',')}]`;
           } else {
             return `${key}={${this.formatDataForSignature(value)}}`;
           }
@@ -191,7 +217,7 @@ export class XPay {
         
         return `${key}=${value}`;
       })
-      .join(', ');
+      .join(',');
   }
 
   /**
