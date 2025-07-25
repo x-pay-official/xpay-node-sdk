@@ -5,9 +5,9 @@ Official Node.js SDK for the X-Pay cryptocurrency payment gateway.
 ## Installation
 
 ```bash
-npm install xpay-sdk
+npm install x-pay-sdk-official
 # or
-yarn add xpay-sdk
+yarn add x-pay-sdk-official
 ```
 
 ## Features
