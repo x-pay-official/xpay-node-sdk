@@ -1,0 +1,56 @@
+{
+  "name": "x-pay-sdk",
+  "version": "0.1.0",
+  "description": "Official Node.js SDK for X-Pay cryptocurrency payment gateway",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "xpay",
+    "cryptocurrency",
+    "payment",
+    "gateway",
+    "bitcoin",
+    "ethereum",
+    "usdt",
+    "web3"
+  ],
+  "author": "X-Pay Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/x-pay-official/xpay-node-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/x-pay-official/xpay-node-sdk/issues"
+  },
+  "homepage": "https://x-pay.fun",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.31.0",
+    "jest": "^30.0.5",
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.0"
+  }
+}
